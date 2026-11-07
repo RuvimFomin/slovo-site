@@ -1,0 +1,156 @@
+---
+import { Image } from "astro:assets";
+import type { EventEntry } from "../lib/events";
+import { startIso } from "../lib/events";
+import { formatDateFull } from "../lib/format";
+import { site } from "../data/site";
+import { u } from "../lib/url";
+import fallbackPhoto from "../assets/photos/vstrecha-1.jpeg";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  event?: EventEntry;
+  speakers?: CollectionEntry<"speakers">[];
+  anchor?: string;
+}
+
+const { event, speakers = [], anchor = "next" } = Astro.props;
+const goalParams = event
+  ? JSON.stringify({ event_id: event.id, event_title: event.data.title })
+  : "{}";
+---
+
+<section id={anchor} class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+  <p class="text-sm font-medium uppercase tracking-[0.2em] text-gold">Следующая встреча</p>
+
+  {
+    event ? (
+      <div
+        id="next-event"
+        data-start-iso={startIso(event)}
+        data-goal-view="view_event"
+        data-goal-params={goalParams}
+        class="mt-6 grid gap-10 overflow-hidden rounded-3xl bg-white shadow-sm lg:grid-cols-2"
+      >
+        <div class="relative min-h-64">
+          <Image
+            src={event.data.poster ?? fallbackPhoto}
+            alt={`Атмосфера встреч «СЛОВО»: лекция в лофте с картинами`}
+            widths={[640, 1024, 1600]}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            class="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+        <div class="flex flex-col justify-center p-8 lg:p-12">
+          {event.data.number && (
+            <p class="text-sm font-medium text-ink/50">Встреча №{event.data.number}</p>
+          )}
+          <h2 class="mt-2 font-display text-3xl text-navy sm:text-4xl">{event.data.title}</h2>
+          {event.data.subtitle && (
+            <p class="mt-2 text-lg text-ink/70">{event.data.subtitle}</p>
+          )}
+          <p class="mt-4 text-ink/80">{event.data.description}</p>
+
+          <dl class="mt-6 space-y-2 text-sm">
+            <div class="flex gap-2">
+              <dt class="w-36 shrink-0 font-medium text-ink/50">Когда</dt>
+              <dd class="">
+                {formatDateFull(event.data.date)}, {event.data.startTime}
+                {event.data.endTime && `–${event.data.endTime}`}
+              </dd>
+            </div>
+            <div class="flex gap-2">
+              <dt class="w-36 shrink-0 font-medium text-ink/50">Где</dt>
+              <dd>{event.data.location}</dd>
+            </div>
+            {speakers.length > 0 && (
+              <div class="flex gap-2">
+                <dt class="w-36 shrink-0 font-medium text-ink/50">Лектор</dt>
+                <dd>{speakers.map((s) => s.data.name).join(", ")}</dd>
+              </div>
+            )}
+            {event.data.bibleReference && (
+              <div class="flex gap-2">
+                <dt class="w-36 shrink-0 font-medium text-ink/50">Текст</dt>
+                <dd>{event.data.bibleReference}</dd>
+              </div>
+            )}
+            {event.data.culturalProgram && (
+              <div class="flex gap-2">
+                <dt class="w-36 shrink-0 font-medium text-ink/50">Программа</dt>
+                <dd>{event.data.culturalProgram}</dd>
+              </div>
+            )}
+          </dl>
+
+          <div class="mt-8 flex flex-wrap items-center gap-4">
+            {event.data.registrationUrl && (
+              <a
+                href={event.data.registrationUrl}
+                target="_blank"
+                rel="noopener"
+                data-utm
+                data-goal="click_registration"
+                data-goal-params={goalParams}
+                class="rounded-full bg-navy px-7 py-3.5 font-medium text-cream transition-colors hover:bg-navy-light"
+              >
+                {event.data.isFree ? "Зарегистрироваться бесплатно" : "Зарегистрироваться"}
+              </a>
+            )}
+            <a href={u(`/events/${event.id}/`)} class="font-medium text-navy underline underline-offset-4 hover:text-gold">
+              Подробнее о встрече
+            </a>
+          </div>
+        </div>
+      </div>
+    ) : null
+  }
+
+  <!-- Состояние, когда следующая встреча ещё не опубликована или уже прошла -->
+  <div
+    id="next-event-fallback"
+    hidden={!!event}
+    class="mt-6 rounded-3xl border border-dashed border-ink/20 bg-white/60 p-10 text-center"
+  >
+    <p class="font-display text-2xl text-navy">Программа ближайшей встречи готовится</p>
+    <p class="mx-auto mt-3 max-w-xl text-ink/70">
+      Мы встречаемся каждое воскресенье в 16:00 на Тверской, 15. Анонс появится
+      совсем скоро — следите в Telegram-канале или посмотрите общую афишу.
+    </p>
+    <div class="mt-6 flex flex-wrap justify-center gap-4">
+      <a
+        href={site.socials.telegram}
+        target="_blank"
+        rel="noopener"
+        data-goal="click_telegram"
+        class="rounded-full bg-navy px-6 py-3 font-medium text-white hover:bg-navy-light"
+      >
+        Telegram-канал
+      </a>
+      <a
+        href={site.socials.timepad}
+        target="_blank"
+        rel="noopener"
+        class="rounded-full border border-navy/30 px-6 py-3 font-medium text-navy hover:border-gold hover:text-gold"
+      >
+        Афиша на Timepad
+      </a>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  // Страховка от устаревшей сборки: если встреча уже началась,
+  // прячем карточку и показываем состояние «программа готовится».
+  (function () {
+    var card = document.getElementById("next-event");
+    var fallback = document.getElementById("next-event-fallback");
+    if (!card || !fallback) return;
+    var start = new Date(card.dataset.startIso);
+    // +3 часа — запас на длительность встречи
+    if (Date.now() > start.getTime() + 3 * 60 * 60 * 1000) {
+      card.hidden = true;
+      fallback.hidden = false;
+    }
+  })();
+</script>

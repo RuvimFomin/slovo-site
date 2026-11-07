@@ -1,0 +1,39 @@
+---
+const steps = [
+  {
+    title: "Знакомство",
+    text: "Гости приходят, знакомятся с пространством и друг с другом.",
+  },
+  {
+    title: "Лекция",
+    text: "Основная лекция — библейский текст в историческом и культурном контексте.",
+  },
+  {
+    title: "Культурная программа",
+    text: "Музыка, литература, искусство или другой формат — каждую неделю новый.",
+  },
+  {
+    title: "Общение и фуршет",
+    text: "Свободное общение, вопросы лектору и угощение.",
+  },
+];
+---
+
+<section id="format" class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+  <div class="max-w-2xl">
+    <h2 class="font-display text-3xl text-navy sm:text-4xl">Как проходит встреча</h2>
+    <p class="mt-4 text-ink/70">
+      Приходите, даже если вы здесь впервые, — всё устроено просто и понятно.
+    </p>
+  </div>
+
+  <ol class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    {steps.map((step, i) => (
+      <li class="relative rounded-2xl border border-ink/10 bg-white p-6">
+        <span class="font-display text-4xl text-sand" aria-hidden="true">{i + 1}</span>
+        <h3 class="mt-3 font-medium text-navy">{step.title}</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink/70">{step.text}</p>
+      </li>
+    ))}
+  </ol>
+</section>

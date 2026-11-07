@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f4f0e6;
+  --color-cream: #f2ede3;
+  --color-ink: #242936;
+  --color-navy: #0d234c;
+  --color-navy-light: #1b3a6b;
+  --color-sand: #dcd8cc;
+  --color-gold: #a08c5b;
+
+  --font-display: "Opium New", "Georgia", "Times New Roman", serif;
+  --font-body: "Muller", "Helvetica Neue", "Arial", sans-serif;
+  --font-script: "Marck Script", "Segoe Script", cursive;
+}
+
+@font-face {
+  font-family: "Opium New";
+  src: url("../assets/fonts/Opiumnewc.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Marck Script";
+  src: url("../assets/fonts/marck-script.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Muller";
+  src: url("../assets/fonts/muller-regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Muller";
+  src: url("../assets/fonts/muller-regular-italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Muller";
+  src: url("../assets/fonts/muller-medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Muller";
+  src: url("../assets/fonts/muller-bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

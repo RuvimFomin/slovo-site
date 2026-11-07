@@ -1,0 +1,47 @@
+---
+import { Image } from "astro:assets";
+import heroPhoto from "../assets/photos/slovo.jpeg";
+import { site } from "../data/site";
+import { u } from "../lib/url";
+---
+
+<section class="relative isolate overflow-hidden bg-navy text-white">
+  <Image
+    src={heroPhoto}
+    alt="Открытая лекция в пространстве «СЛОВО»: лектор у экрана перед полным залом"
+    widths={[640, 1024, 1600, 2500]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 -z-10 h-full w-full object-cover"
+  />
+  <div class="absolute inset-0 -z-10 bg-gradient-to-t from-navy via-navy/70 to-navy/40"></div>
+
+  <div class="mx-auto flex min-h-[85vh] max-w-6xl flex-col justify-end px-4 pb-16 pt-32 sm:px-6">
+    <p class="text-sm font-medium uppercase tracking-[0.2em] text-sand">
+      {site.schedule} · {site.address}
+    </p>
+    <h1 class="mt-4 max-w-3xl font-display text-4xl leading-tight sm:text-5xl lg:text-6xl">
+      СЛОВО — пространство смыслов, культуры и живого общения
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg text-white/85">
+      Открытые встречи о Библии, истории, искусстве и вопросах, которые волнуют
+      человека. Каждое воскресенье в центре Москвы.
+    </p>
+    <p class="mt-4 font-script text-2xl text-sand">Библейское пространство</p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a
+        href={u("/vstrecha/")}
+        class="rounded-full bg-cream px-7 py-3.5 font-medium text-navy transition-colors hover:bg-white"
+      >
+        Ближайшая встреча
+      </a>
+      <a
+        href="#about"
+        class="rounded-full border border-white/60 px-7 py-3.5 font-medium text-white transition-colors hover:bg-white/10"
+      >
+        Что такое СЛОВО?
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+import NextEvent from "../components/NextEvent.astro";
+import Location from "../components/Location.astro";
+import { getNextEvent } from "../lib/events";
+import { eventJsonLd } from "../lib/schema";
+import { getEntries } from "astro:content";
+
+const nextEvent = await getNextEvent();
+const speakers = nextEvent
+  ? await getEntries(nextEvent.data.speakerIds.map((id) => ({ collection: "speakers" as const, id })))
+  : [];
+---
+
+<Base
+  title={nextEvent
+    ? `Ближайшая встреча: ${nextEvent.data.title} — СЛОВО`
+    : "Ближайшая встреча — СЛОВО"}
+  description={nextEvent
+    ? `${nextEvent.data.description} Воскресенье, 16:00, Москва, Тверская, 15.`
+    : "Программа ближайшей встречи готовится. Встречаемся каждое воскресенье в 16:00 на Тверской, 15."}
+  jsonLd={nextEvent ? eventJsonLd(nextEvent, speakers) : undefined}
+>
+  <div class="pt-6">
+    <NextEvent event={nextEvent} speakers={speakers} />
+  </div>
+  <Location />
+</Base>

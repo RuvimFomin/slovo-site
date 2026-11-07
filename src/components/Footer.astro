@@ -1,0 +1,67 @@
+---
+import { site } from "../data/site";
+import { u } from "../lib/url";
+import markCream from "../assets/img/mark-cream.png?url";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-ink/10 bg-navy text-paper">
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <img src={markCream} alt="" class="h-10 w-auto" />
+        <p class="font-display text-2xl">СЛОВО</p>
+      </div>
+      <p class="mt-1 font-script text-lg text-sand">Библейское пространство</p>
+      <p class="mt-3 text-sm text-paper/70">
+        Культурно-просветительское пространство в центре Москвы. Лекции, искусство,
+        история и живое общение — каждое воскресенье в 16:00.
+      </p>
+    </div>
+
+    <div>
+      <p class="text-sm font-medium uppercase tracking-wider text-sand">Контакты</p>
+      <ul class="mt-3 space-y-2 text-sm text-paper/80">
+        <li>{site.address}</li>
+        <li>
+          <a href={`mailto:${site.contactEmail}`} data-goal="click_contact" class="hover:text-white">
+            {site.contactEmail}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="text-sm font-medium uppercase tracking-wider text-sand">Мы в сети</p>
+      <ul class="mt-3 space-y-2 text-sm text-paper/80">
+        <li>
+          <a href={site.socials.telegram} data-goal="click_telegram" target="_blank" rel="noopener" class="hover:text-white">Telegram</a>
+        </li>
+        <li>
+          <a href={site.socials.youtube} data-goal="click_youtube" target="_blank" rel="noopener" class="hover:text-white">YouTube</a>
+        </li>
+        <li>
+          <a href={site.socials.taplink} target="_blank" rel="noopener" class="hover:text-white">Taplink</a>
+        </li>
+        <li>
+          <a href={site.socials.timepad} target="_blank" rel="noopener" class="hover:text-white">Афиша на Timepad</a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="text-sm font-medium uppercase tracking-wider text-sand">Документы</p>
+      <ul class="mt-3 space-y-2 text-sm text-paper/80">
+        <li><a href={u("/privacy/")} class="hover:text-white">Политика обработки персональных данных</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-paper/10">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <p>© {year} {site.fullName}. Все права на материалы сайта защищены.</p>
+      <!-- TODO: реквизиты правообладателя предоставляет Андрей Наприенко -->
+    </div>
+  </div>
+</footer>

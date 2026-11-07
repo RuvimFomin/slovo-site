@@ -1,0 +1,46 @@
+---
+const faq = [
+  {
+    q: "Можно ли прийти, если я не верующий?",
+    a: "Да. Встречи открыты для людей с любым мировоззрением — «СЛОВО» культурное пространство, а не религиозная организация.",
+  },
+  {
+    q: "Нужно ли заранее читать Библию?",
+    a: "Нет, предварительная подготовка не требуется. Лекции построены так, чтобы быть понятными и тем, кто открывает текст впервые.",
+  },
+  {
+    q: "Можно прийти одному?",
+    a: "Да, многие приходят по одиночке. После лекции — фуршет и свободное общение, познакомиться легко.",
+  },
+  {
+    q: "Нужно ли регистрироваться?",
+    a: "Да, мы просим зарегистрироваться через Timepad — так мы понимаем, сколько гостей ждать. Регистрация занимает минуту.",
+  },
+  {
+    q: "Сколько стоит участие?",
+    // TODO: подтвердить формулировку «бесплатно» для всех встреч перед публикацией
+    a: "Вход на встречи свободный. Если для отдельной программы планируется иной формат, мы укажем это в анонсе.",
+  },
+];
+---
+
+<section id="faq" class="mx-auto max-w-4xl px-4 py-20 sm:px-6">
+  <h2 class="text-center font-display text-3xl text-navy sm:text-4xl">Для кого наше пространство</h2>
+
+  <div class="mt-10 space-y-3">
+    {faq.map((item) => (
+      <details class="group rounded-2xl border border-ink/10 bg-white open:shadow-sm">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 font-medium text-navy [&::-webkit-details-marker]:hidden">
+          {item.q}
+          <svg
+            width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+            class="shrink-0 transition-transform group-open:rotate-45"
+          >
+            <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </summary>
+        <p class="px-6 pb-5 leading-relaxed text-ink/75">{item.a}</p>
+      </details>
+    ))}
+  </div>
+</section>

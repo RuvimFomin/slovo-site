@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://slovospace.ru/sitemap-index.xml

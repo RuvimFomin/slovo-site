@@ -1,0 +1,104 @@
+---
+import { site } from "../data/site";
+
+// Счётчик подключается только когда задан реальный номер.
+const enabled = /^\d+$/.test(site.metrikaId);
+---
+
+<script is:inline define:vars={{ metrikaId: site.metrikaId, metrikaEnabled: enabled }}>
+  window.SLOVO_METRIKA_ID = metrikaEnabled ? metrikaId : null;
+
+  // Отправка цели. Без подключённого счётчика — безопасный no-op.
+  window.slovoGoal = function (name, params) {
+    if (window.SLOVO_METRIKA_ID && typeof window.ym === "function") {
+      window.ym(window.SLOVO_METRIKA_ID, "reachGoal", name, params || {});
+    }
+  };
+
+  // Сохраняем UTM-метки первого визита (first touch).
+  (function () {
+    try {
+      var keys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+      var params = new URLSearchParams(window.location.search);
+      var found = {};
+      keys.forEach(function (k) {
+        var v = params.get(k);
+        if (v) found[k] = v;
+      });
+      if (Object.keys(found).length > 0 && !localStorage.getItem("slovo_utm")) {
+        localStorage.setItem("slovo_utm", JSON.stringify(found));
+      }
+    } catch (e) {}
+  })();
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Передаём сохранённые UTM-метки во внешние ссылки регистрации (Timepad).
+    try {
+      var saved = localStorage.getItem("slovo_utm");
+      if (saved) {
+        var utm = JSON.parse(saved);
+        document.querySelectorAll("a[data-utm]").forEach(function (a) {
+          try {
+            var u = new URL(a.href);
+            Object.keys(utm).forEach(function (k) {
+              if (!u.searchParams.get(k)) u.searchParams.set(k, utm[k]);
+            });
+            a.href = u.toString();
+          } catch (e) {}
+        });
+      }
+    } catch (e) {}
+
+    // Цели по клику: data-goal="click_registration" data-goal-params='{"event_id":"..."}'
+    document.addEventListener("click", function (e) {
+      var el = e.target.closest("[data-goal]");
+      if (!el) return;
+      var params = {};
+      try {
+        params = el.dataset.goalParams ? JSON.parse(el.dataset.goalParams) : {};
+      } catch (err) {}
+      window.slovoGoal(el.dataset.goal, params);
+    });
+
+    // Цели по показу блока: data-goal-view="view_event"
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (en) {
+            if (!en.isIntersecting) return;
+            var el = en.target;
+            var params = {};
+            try {
+              params = el.dataset.goalParams ? JSON.parse(el.dataset.goalParams) : {};
+            } catch (err) {}
+            window.slovoGoal(el.dataset.goalView, params);
+            io.unobserve(el);
+          });
+        },
+        { threshold: 0.4 },
+      );
+      document.querySelectorAll("[data-goal-view]").forEach(function (el) {
+        io.observe(el);
+      });
+    }
+  });
+</script>
+
+{
+  enabled && (
+    <script is:inline define:vars={{ id: site.metrikaId }}>
+      (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+      ym(id, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+    </script>
+    <noscript>
+      <div>
+        <img src={`https://mc.yandex.ru/watch/${site.metrikaId}`} style="position:absolute; left:-9999px;" alt="" />
+      </div>
+    </noscript>
+  )
+}

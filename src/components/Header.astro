@@ -1,0 +1,59 @@
+---
+import { site } from "../data/site";
+import { u } from "../lib/url";
+import markNavy from "../assets/img/mark-navy.png?url";
+
+const nav = [
+  { href: u("/#about"), label: "О пространстве" },
+  { href: u("/#format"), label: "Как проходит" },
+  { href: u("/#meetings"), label: "Встречи" },
+  { href: u("/#lectures"), label: "Лекции" },
+  { href: u("/#location"), label: "Как найти" },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+    <a href={u("/")} class="flex items-center gap-2.5" aria-label="СЛОВО — на главную">
+      <img src={markNavy} alt="" class="h-9 w-auto" />
+      <span class="font-display text-2xl tracking-wide text-navy">СЛОВО</span>
+    </a>
+
+    <nav class="hidden items-center gap-6 text-sm lg:flex" aria-label="Основная навигация">
+      {nav.map((item) => (
+        <a href={item.href} class="text-ink/80 transition-colors hover:text-gold">
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a
+        href={u("/vstrecha/")}
+        class="whitespace-nowrap rounded-full bg-navy px-4 py-2 text-xs font-medium text-cream transition-colors hover:bg-navy-light sm:px-5 sm:text-sm"
+      >
+        Ближайшая встреча
+      </a>
+      <details class="relative lg:hidden">
+        <summary
+          class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-ink/20 [&::-webkit-details-marker]:hidden"
+          aria-label="Меню"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </summary>
+        <nav
+          class="absolute right-0 mt-2 w-56 rounded-xl border border-ink/10 bg-white p-2 shadow-lg"
+          aria-label="Мобильная навигация"
+        >
+          {nav.map((item) => (
+            <a href={item.href} class="block rounded-lg px-4 py-2.5 text-sm hover:bg-paper">
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

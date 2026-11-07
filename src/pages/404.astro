@@ -1,0 +1,23 @@
+---
+import Base from "../layouts/Base.astro";
+import { u } from "../lib/url";
+---
+
+<Base title="Страница не найдена — СЛОВО" description="Такой страницы не существует." noindex>
+  <div class="mx-auto flex max-w-2xl flex-col items-center px-4 py-32 text-center sm:px-6">
+    <p class="font-display text-7xl text-sand" aria-hidden="true">404</p>
+    <h1 class="mt-4 font-display text-3xl text-navy">Страница не найдена</h1>
+    <p class="mt-4 text-ink/70">
+      Возможно, ссылка устарела. Загляните на главную — там всегда актуальная
+      информация о ближайшей встрече.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a href={u("/")} class="rounded-full bg-navy px-7 py-3.5 font-medium text-white hover:bg-navy-light">
+        На главную
+      </a>
+      <a href={u("/vstrecha/")} class="rounded-full border border-navy/30 px-7 py-3.5 font-medium text-navy hover:border-gold hover:text-gold">
+        Ближайшая встреча
+      </a>
+    </div>
+  </div>
+</Base>

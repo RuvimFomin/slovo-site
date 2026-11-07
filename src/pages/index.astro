@@ -1,0 +1,65 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import NextEvent from "../components/NextEvent.astro";
+import About from "../components/About.astro";
+import Format from "../components/Format.astro";
+import Gallery from "../components/Gallery.astro";
+import SpeakerBlock from "../components/SpeakerBlock.astro";
+import LecturesBlock from "../components/LecturesBlock.astro";
+import Faq from "../components/Faq.astro";
+import Location from "../components/Location.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Contacts from "../components/Contacts.astro";
+import { getNextEvent } from "../lib/events";
+import { site } from "../data/site";
+import { getCollection, getEntries } from "astro:content";
+
+const nextEvent = await getNextEvent();
+const speakers = nextEvent ? await getEntries(nextEvent.data.speakerIds.map((id) => ({ collection: "speakers" as const, id }))) : [];
+
+const allSpeakers = await getCollection("speakers");
+const mainSpeaker = allSpeakers.find((s) => s.id === "mark-khorev") ?? allSpeakers[0];
+const speakerNames = Object.fromEntries(allSpeakers.map((s) => [s.id, s.data.name]));
+
+const lectures = (await getCollection("lectures"))
+  .sort((a, b) => b.data.date.localeCompare(a.data.date))
+  .slice(0, 6);
+
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: site.fullName,
+  url: site.url,
+  sameAs: [
+    site.socials.telegram,
+    site.socials.youtube,
+    site.socials.taplink,
+    site.socials.timepad,
+  ],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Москва",
+    streetAddress: "ул. Тверская, 15",
+    addressCountry: "RU",
+  },
+};
+---
+
+<Base
+  title="СЛОВО — открытые лекции и культурные встречи в Москве"
+  description="Библейское пространство «СЛОВО»: открытые лекции о Библии, культуре, литературе и искусстве. Воскресенье, 16:00, Тверская, 15, Москва."
+  jsonLd={orgJsonLd}
+>
+  <Hero />
+  <NextEvent event={nextEvent} speakers={speakers} />
+  <About />
+  <Format />
+  <Gallery />
+  {mainSpeaker && <SpeakerBlock speaker={mainSpeaker} />}
+  <LecturesBlock lectures={lectures} speakerNames={speakerNames} />
+  <Faq />
+  <Location />
+  <FinalCta event={nextEvent} />
+  <Contacts />
+</Base>

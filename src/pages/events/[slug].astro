@@ -1,0 +1,143 @@
+---
+import { Image, getImage } from "astro:assets";
+import { getEntries, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Location from "../../components/Location.astro";
+import { getEventPages, eventEnd, type EventEntry } from "../../lib/events";
+import { formatDateFull } from "../../lib/format";
+import { eventJsonLd } from "../../lib/schema";
+import { site } from "../../data/site";
+import fallbackPhoto from "../../assets/photos/slovo.jpeg";
+
+export async function getStaticPaths() {
+  const events = await getEventPages();
+  return events.map((event) => ({ params: { slug: event.id }, props: { event } }));
+}
+
+interface Props {
+  event: EventEntry;
+}
+
+const { event } = Astro.props;
+const { Content } = await render(event);
+const speakers = await getEntries(
+  event.data.speakerIds.map((id) => ({ collection: "speakers" as const, id })),
+);
+
+const isPast = eventEnd(event) <= new Date();
+const isCancelled = event.data.status === "cancelled";
+const goalParams = JSON.stringify({ event_id: event.id, event_title: event.data.title });
+
+const poster = event.data.poster ?? fallbackPhoto;
+const ogImage = await getImage({ src: poster, width: 1200 });
+---
+
+<Base
+  title={`${event.data.title} — встреча пространства СЛОВО, ${formatDateFull(event.data.date)}`}
+  description={event.data.description}
+  ogType="article"
+  ogImage={ogImage.src}
+  jsonLd={eventJsonLd(event, speakers, new URL(ogImage.src, site.url).href)}
+>
+  <article class="mx-auto max-w-4xl px-4 py-16 sm:px-6" data-goal-view="view_event" data-goal-params={goalParams}>
+    <p class="text-sm font-medium uppercase tracking-[0.2em] text-navy">
+      {event.data.number ? `Встреча №${event.data.number}` : "Встреча пространства «СЛОВО»"}
+    </p>
+    <h1 class="mt-3 font-display text-4xl text-navy sm:text-5xl">{event.data.title}</h1>
+    {event.data.subtitle && <p class="mt-3 text-xl text-ink/70">{event.data.subtitle}</p>}
+
+    {isCancelled && (
+      <p class="mt-6 rounded-2xl bg-navy/10 px-6 py-4 font-medium text-navy">
+        Встреча отменена. Следите за анонсами в Telegram-канале.
+      </p>
+    )}
+
+    <dl class="mt-8 grid gap-4 rounded-2xl bg-white p-6 sm:grid-cols-2">
+      <div>
+        <dt class="text-sm font-medium text-ink/50">Дата и время</dt>
+        <dd class="mt-1">
+          {formatDateFull(event.data.date)}, {event.data.startTime}
+          {event.data.endTime && `–${event.data.endTime}`}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-ink/50">Место</dt>
+        <dd class="mt-1">{event.data.location}</dd>
+      </div>
+      {speakers.length > 0 && (
+        <div>
+          <dt class="text-sm font-medium text-ink/50">Лектор</dt>
+          <dd class="mt-1">{speakers.map((s) => s.data.name).join(", ")}</dd>
+        </div>
+      )}
+      {event.data.bibleReference && (
+        <div>
+          <dt class="text-sm font-medium text-ink/50">Библейский текст</dt>
+          <dd class="mt-1">{event.data.bibleReference}</dd>
+        </div>
+      )}
+      {event.data.culturalProgram && (
+        <div class="sm:col-span-2">
+          <dt class="text-sm font-medium text-ink/50">Культурная программа</dt>
+          <dd class="mt-1">{event.data.culturalProgram}</dd>
+        </div>
+      )}
+    </dl>
+
+    <div class="prose-lg mt-10 leading-relaxed text-ink/85 [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-navy [&_p]:mt-4">
+      <Content />
+    </div>
+
+    {
+      !isPast && !isCancelled && event.data.registrationUrl && (
+        <div class="mt-10 rounded-3xl bg-navy p-8 text-center text-white">
+          <p class="font-display text-2xl">Приходите в воскресенье</p>
+          <a
+            href={event.data.registrationUrl}
+            target="_blank"
+            rel="noopener"
+            data-utm
+            data-goal="click_registration"
+            data-goal-params={goalParams}
+            class="mt-5 inline-block rounded-full bg-cream px-8 py-4 font-medium text-navy transition-colors hover:bg-white"
+          >
+            {event.data.isFree ? "Зарегистрироваться бесплатно" : "Зарегистрироваться"}
+          </a>
+        </div>
+      )
+    }
+
+    {
+      event.data.videoUrls && (
+        <div class="mt-10">
+          <h2 class="font-display text-2xl text-navy">Запись встречи</h2>
+          <ul class="mt-4 flex flex-wrap gap-4">
+            {event.data.videoUrls.youtube && (
+              <li>
+                <a href={event.data.videoUrls.youtube} target="_blank" rel="noopener" data-goal="play_video" data-goal-params={goalParams} class="font-medium text-navy underline underline-offset-4 hover:text-gold">
+                  Смотреть на YouTube
+                </a>
+              </li>
+            )}
+            {event.data.videoUrls.rutube && (
+              <li>
+                <a href={event.data.videoUrls.rutube} target="_blank" rel="noopener" data-goal="play_video" data-goal-params={goalParams} class="font-medium text-navy underline underline-offset-4 hover:text-gold">
+                  Смотреть на Rutube
+                </a>
+              </li>
+            )}
+            {event.data.videoUrls.vk && (
+              <li>
+                <a href={event.data.videoUrls.vk} target="_blank" rel="noopener" data-goal="play_video" data-goal-params={goalParams} class="font-medium text-navy underline underline-offset-4 hover:text-gold">
+                  Смотреть в VK Видео
+                </a>
+              </li>
+            )}
+          </ul>
+        </div>
+      )
+    }
+  </article>
+
+  <Location />
+</Base>
